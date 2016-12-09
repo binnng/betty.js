@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>battery.js</title>
+	<script type="text/javascript" src="../battery.js"></script>
+</head>
+<body>
+	
+<script type="text/javascript">
+	var MBK = Battery({
+		uri: "/test/lib.js",
+		key: "lib",
+	}, function() {
+		console.log("MBK IS OK")
+	})
+
+	MBK.apply(function() {
+		console.log(Mobike)
+	})
+	MBK.apply(function() {
+		console.log(Mobike)
+	})
+</script>
+</body>
+</html>

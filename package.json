@@ -1,0 +1,13 @@
+{
+  "name": "battery.js",
+  "scripts": {
+    "start": "fis3 server start --no-browse --qrcode && fis3 release -wL",
+    "build": "rm -rf build && fis3 release build -d build/ && fis3 release min -d build/"
+  },
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "fis-parser-babel-5.x": "^1.4.0"
+  }
+}
