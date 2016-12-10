@@ -1,3 +1,3 @@
-# BETRY.js
+# BETTY.js
 
 贝蒂.js

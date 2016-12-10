@@ -1,7 +1,7 @@
 {
   "name": "betty.js",
   "version": "1.0.1",
-  "description": "cache javascript content to localStorage",
+  "description": "Cache javascript content to localStorage",
   "main": "betty.js",
   "scripts": {
     "start": "fis3 server start --no-browse && fis3 release -wL",
