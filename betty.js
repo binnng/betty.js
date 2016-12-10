@@ -51,6 +51,20 @@ var Betty = ((window, document, undefined) => {
     firstScript.parentNode.insertBefore(el, firstScript)
   }
 
+  function loadScriptWithAjax(src, success) {
+    var xhr = new XMLHttpRequest()
+    xhr.open("get", src)
+    xhr.send()
+    xhr.addEventListener("error", error)
+    xhr.addEventListener("load", ref => {
+      var target = ref.target
+      target.status >= 400 ? error(target) : success(target.response)
+    })
+    function error() {
+      return new Error(`failed to load: ${src}`)
+    }
+  }
+
   // 执行代码片段
   function execCode(code, callback) {
     (new Function("!" + code + "()"))()
@@ -58,7 +72,7 @@ var Betty = ((window, document, undefined) => {
   }
 
   function Betty() {
-    this.noCache = this.loadRemote = false
+    this.noCache = this.loadRemote = this.xDomain = false
     this.uri = this.key = ""
     this.callbacks = []
   }
@@ -73,12 +87,14 @@ var Betty = ((window, document, undefined) => {
       let {
         uri,
         key,
-        noCache
+        noCache,
+        xDomain
       } = config
 
       this.uri = uri
       this.key = key
       noCache !== undefined && ( this.noCache = noCache )
+      xDomain !== undefined && ( this.xDomain = xDomain )
 
       let storeKey = `${PREFIX}:${key}:${uri}`
       let storeCode = Store.getItem(storeKey)
@@ -120,18 +136,24 @@ var Betty = ((window, document, undefined) => {
         uri,
         noCache,
         callbacks,
-        loadRemote
+        loadRemote,
+        xDomain
       } = this
+
+      function cb() {
+        callbacks.forEach((item, key) => {
+          item()
+        })
+      }
 
       if (code && !noCache) {
         execCode(code, callback)
       } else {
         callbacks.push(callback)
         if (!loadRemote) {
-          loadScript(uri, () => {
-            callbacks.forEach((item, key) => {
-              item()
-            })
+          xDomain ? loadScript(uri, cb) : loadScriptWithAjax(uri, (res) => {
+            this.add(`function(){${res}}`)
+            cb()
           })
           this.loadRemote = true
         }

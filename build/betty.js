@@ -55,6 +55,20 @@ var Betty = (function (window, document, undefined) {
     firstScript.parentNode.insertBefore(el, firstScript);
   }
 
+  function loadScriptWithAjax(src, success) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("get", src);
+    xhr.send();
+    xhr.addEventListener("error", error);
+    xhr.addEventListener("load", function (ref) {
+      var target = ref.target;
+      target.status >= 400 ? error(target) : success(target.response);
+    });
+    function error() {
+      return new Error("failed to load: " + src);
+    }
+  }
+
   // 执行代码片段
   function execCode(code, callback) {
     new Function("!" + code + "()")();
@@ -62,7 +76,7 @@ var Betty = (function (window, document, undefined) {
   }
 
   function Betty() {
-    this.noCache = this.loadRemote = false;
+    this.noCache = this.loadRemote = this.xDomain = false;
     this.uri = this.key = "";
     this.callbacks = [];
   }
@@ -75,10 +89,12 @@ var Betty = (function (window, document, undefined) {
       var uri = config.uri;
       var key = config.key;
       var noCache = config.noCache;
+      var xDomain = config.xDomain;
 
       this.uri = uri;
       this.key = key;
       noCache !== undefined && (this.noCache = noCache);
+      xDomain !== undefined && (this.xDomain = xDomain);
 
       var storeKey = PREFIX + ":" + key + ":" + uri;
       var storeCode = Store.getItem(storeKey);
@@ -114,21 +130,29 @@ var Betty = (function (window, document, undefined) {
       return this;
     },
     apply: function apply(callback) {
+      var _this = this;
+
       var code = this.code;
       var uri = this.uri;
       var noCache = this.noCache;
       var callbacks = this.callbacks;
       var loadRemote = this.loadRemote;
+      var xDomain = this.xDomain;
+
+      function cb() {
+        callbacks.forEach(function (item, key) {
+          item();
+        });
+      }
 
       if (code && !noCache) {
         execCode(code, callback);
       } else {
         callbacks.push(callback);
         if (!loadRemote) {
-          loadScript(uri, function () {
-            callbacks.forEach(function (item, key) {
-              item();
-            });
+          xDomain ? loadScript(uri, cb) : loadScriptWithAjax(uri, function (res) {
+            _this.add("function(){" + res + "}");
+            cb();
           });
           this.loadRemote = true;
         }
