@@ -1,9 +1,9 @@
-var Battery = ((window, document, undefined) => {
+var Betry = ((window, document, undefined) => {
 
-  const PREFIX = "BTRY"
+  const PREFIX = "BETRY"
 
   const Store = (() => {
-    const name = "__s"
+    const test = PREFIX
     const store = window.localStorage
     const virtualStore = {
       setItem: noop,
@@ -14,8 +14,8 @@ var Battery = ((window, document, undefined) => {
 
     if (store) {
       try { 
-        store.setItem(name, "")
-        store.removeItem(name)
+        store.setItem(test, "")
+        store.removeItem(test)
         return store
       } catch (e) {
         return virtualStore
@@ -57,14 +57,14 @@ var Battery = ((window, document, undefined) => {
     callback && setTimeout(callback, 0)
   }
 
-  function Battery() {
+  function Betry() {
     this.noCache = this.loadRemote = false
     this.uri = this.key = ""
     this.callbacks = []
   }
 
-  Battery.prototype = {
-    constructor: Battery,
+  Betry.prototype = {
+    constructor: Betry,
     init({
       config,
       callback
@@ -141,7 +141,7 @@ var Battery = ((window, document, undefined) => {
     }
   }
 
-  return ( config, callback ) => (new Battery()).init({
+  return ( config, callback ) => (new Betry()).init({
     config,
     callback
   })

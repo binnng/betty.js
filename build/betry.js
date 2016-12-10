@@ -1,9 +1,9 @@
-var Battery = (function (window, document, undefined) {
+var Betry = (function (window, document, undefined) {
 
-  var PREFIX = "BTRY";
+  var PREFIX = "BETRY";
 
   var Store = (function () {
-    var name = "__s";
+    var test = PREFIX;
     var store = window.localStorage;
     var virtualStore = {
       setItem: noop,
@@ -14,8 +14,8 @@ var Battery = (function (window, document, undefined) {
 
     if (store) {
       try {
-        store.setItem(name, "");
-        store.removeItem(name);
+        store.setItem(test, "");
+        store.removeItem(test);
         return store;
       } catch (e) {
         return virtualStore;
@@ -61,14 +61,14 @@ var Battery = (function (window, document, undefined) {
     callback && setTimeout(callback, 0);
   }
 
-  function Battery() {
+  function Betry() {
     this.noCache = this.loadRemote = false;
     this.uri = this.key = "";
     this.callbacks = [];
   }
 
-  Battery.prototype = {
-    constructor: Battery,
+  Betry.prototype = {
+    constructor: Betry,
     init: function init(_ref) {
       var config = _ref.config;
       var callback = _ref.callback;
@@ -139,7 +139,7 @@ var Battery = (function (window, document, undefined) {
   };
 
   return function (config, callback) {
-    return new Battery().init({
+    return new Betry().init({
       config: config,
       callback: callback
     });

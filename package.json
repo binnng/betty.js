@@ -1,13 +1,25 @@
 {
-  "name": "battery.js",
+  "name": "betry.js",
+  "version": "1.0.0",
+  "description": "cache javascript content to localStorage",
+  "main": "betry.js",
   "scripts": {
     "start": "fis3 server start --no-browse && fis3 release -wL",
     "build": "rm -rf build && fis3 release build -d build/ && fis3 release min -d build/"
   },
-  "dependencies": {
-
+  "keywords": "localStorage, cache, basket.js, bowl.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/binnng/betry.js.git"
   },
+  "dependencies": {},
   "devDependencies": {
     "fis-parser-babel-5.x": "^1.4.0"
-  }
+  },
+  "author": "binnng <binnng@live.com> (https://github.com/binnng)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/binnng/betry.js/issues"
+  },
+  "homepage": "https://binnng.github.io/betry.js/"
 }
