@@ -111,6 +111,7 @@ var Betty = (function (window, document, undefined) {
       this.code = funcString;
       this.noCache || Store.setItem(storeKey, funcString);
       execCode(funcString);
+      return this;
     },
     apply: function apply(callback) {
       var code = this.code;
@@ -132,9 +133,11 @@ var Betty = (function (window, document, undefined) {
           this.loadRemote = true;
         }
       }
+      return this;
     },
     clear: function clear(key) {
       clearStore(PREFIX + ":" + key);
+      return this;
     }
   };
 

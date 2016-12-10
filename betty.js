@@ -112,6 +112,7 @@ var Betty = ((window, document, undefined) => {
       this.code = funcString
       this.noCache || Store.setItem(storeKey, funcString)
       execCode(funcString)
+      return this
     },
     apply(callback) {
       let {
@@ -135,9 +136,11 @@ var Betty = ((window, document, undefined) => {
           this.loadRemote = true
         }
       }
+      return this
     },
     clear(key) {
       clearStore(`${PREFIX}:${key}`)
+      return this
     }
   }
 

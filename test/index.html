@@ -3,22 +3,19 @@
 <head>
 	<meta charset="UTF-8">
 	<title>BETRY.js</title>
-	<script type="text/javascript" src="../betry.js"></script>
+	<script type="text/javascript" src="../betty.js"></script>
 </head>
 <body>
 	
 <script type="text/javascript">
-	var MBK = Betry({
+	var MBK = Betty({
 		uri: "/test/mobike.js",
-		key: "lib",
+		key: "mobike",
 	}, function() {
 		console.log(Mobike.site)
 	})
-
-	MBK.apply(function() {
+	.apply(function() {
 		console.log(Mobike[0])
-	})
-	MBK.apply(function() {
 		console.log(Mobike[1])
 	})
 </script>
