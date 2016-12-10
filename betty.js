@@ -1,6 +1,6 @@
-var Betry = ((window, document, undefined) => {
+var Betty = ((window, document, undefined) => {
 
-  const PREFIX = "BETRY"
+  const PREFIX = "BETTY"
 
   const Store = (() => {
     const test = PREFIX
@@ -57,14 +57,14 @@ var Betry = ((window, document, undefined) => {
     callback && setTimeout(callback, 0)
   }
 
-  function Betry() {
+  function Betty() {
     this.noCache = this.loadRemote = false
     this.uri = this.key = ""
     this.callbacks = []
   }
 
-  Betry.prototype = {
-    constructor: Betry,
+  Betty.prototype = {
+    constructor: Betty,
     init({
       config,
       callback
@@ -141,7 +141,7 @@ var Betry = ((window, document, undefined) => {
     }
   }
 
-  return ( config, callback ) => (new Betry()).init({
+  return ( config, callback ) => (new Betty()).init({
     config,
     callback
   })

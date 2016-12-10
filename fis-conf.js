@@ -13,7 +13,7 @@ fis.media("build")
   .match('*', {
     release: false
   })
-  .match('betry.js', {
+  .match('betty.js', {
     release: true
   })
 
@@ -21,7 +21,7 @@ fis.media("min")
   .match('*', {
     release: false
   })
-  .match('betry.js', {
+  .match('betty.js', {
     optimizer: fis.plugin('uglify-js', {
       // 文档：http://lisperator.net/uglifyjs/compress
       compress: {
@@ -39,5 +39,5 @@ fis.media("min")
         conditionals: true
       }
     }),
-    release: "betry.min.js"
+    release: "betty.min.js"
   })

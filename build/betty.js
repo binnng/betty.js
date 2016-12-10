@@ -1,6 +1,6 @@
-var Betry = (function (window, document, undefined) {
+var Betty = (function (window, document, undefined) {
 
-  var PREFIX = "BETRY";
+  var PREFIX = "BETTY";
 
   var Store = (function () {
     var test = PREFIX;
@@ -61,14 +61,14 @@ var Betry = (function (window, document, undefined) {
     callback && setTimeout(callback, 0);
   }
 
-  function Betry() {
+  function Betty() {
     this.noCache = this.loadRemote = false;
     this.uri = this.key = "";
     this.callbacks = [];
   }
 
-  Betry.prototype = {
-    constructor: Betry,
+  Betty.prototype = {
+    constructor: Betty,
     init: function init(_ref) {
       var config = _ref.config;
       var callback = _ref.callback;
@@ -139,7 +139,7 @@ var Betry = (function (window, document, undefined) {
   };
 
   return function (config, callback) {
-    return new Betry().init({
+    return new Betty().init({
       config: config,
       callback: callback
     });
