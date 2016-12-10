@@ -1,4 +1,6 @@
-var Battery = (() => {
+var Battery = ((window, document, undefined) => {
+
+  const PREFIX = "BTRY"
 
   const Store = (() => {
     const name = "__s"
@@ -23,7 +25,9 @@ var Battery = (() => {
     }
   })()
 
-  const clearStore = (prefix) => {
+  function noop() {}
+
+  function clearStore(prefix) {
     if (!Store.virtual) {
       for (let key in Store) {
         if (0 === key.indexOf(prefix)) {
@@ -33,20 +37,17 @@ var Battery = (() => {
     }
   }
 
-  function noop() {}
-
   function loadScript(src, cb) {
-    var doc = document
-    var tag = 'script'
+    var tag = "script"
     var firstScript
     var el
-    cb = cb || function() {}
-    el = doc.createElement(tag)
-    firstScript = doc.getElementsByTagName(tag)[0]
+    cb = cb || noop
+    el = document.createElement(tag)
+    firstScript = document.getElementsByTagName(tag)[0]
     el.async = 1
     el.src = src
-    el.onload = function () { cb() }
-    el.onerror = function () { cb(new Error('failed to load: ' + src)) }
+    el.onload = () => { cb() }
+    el.onerror = () => { cb(new Error(`failed to load: ${src}`)) }
     firstScript.parentNode.insertBefore(el, firstScript)
   }
 
@@ -56,14 +57,14 @@ var Battery = (() => {
     callback && setTimeout(callback, 0)
   }
 
-  function battery() {
-    this.noCache = this.load = false
+  function Battery() {
+    this.noCache = this.loadRemote = false
     this.uri = this.key = ""
     this.callbacks = []
   }
 
-  battery.prototype = {
-    constructor: battery,
+  Battery.prototype = {
+    constructor: Battery,
     init({
       config,
       callback
@@ -79,22 +80,23 @@ var Battery = (() => {
       this.key = key
       noCache !== undefined && ( this.noCache = noCache )
 
-      let storeKey = `${key}:${uri}`
+      let storeKey = `${PREFIX}:${key}:${uri}`
       let storeCode = Store.getItem(storeKey)
 
       this.storeKey = storeKey
       noCache || ( this.code = storeCode )
 
-      if (callback) {
-        this.callbacks.push(callback)
-      }
-
-      // 如果没有存储脚本，清除之前版本的key
       if (!storeCode) {
+        // 如果没有存储脚本，清除之前版本的key
         // 清理操作不阻塞主脚本
         setTimeout(function() {
           clearStore(key)
         }, 0)
+
+        // 如果传递了回调函数，存放到`callbacks`中
+        if (callback) {
+          this.callbacks.push(callback)
+        }
       } else {
         callback && this.apply(callback)
       }
@@ -117,31 +119,31 @@ var Battery = (() => {
         uri,
         noCache,
         callbacks,
-        load
+        loadRemote
       } = this
 
       if (code && !noCache) {
         execCode(code, callback)
       } else {
         callbacks.push(callback)
-        if (!load) {
+        if (!loadRemote) {
           loadScript(uri, () => {
-            callbacks.forEach((item) => {
+            callbacks.forEach((item, key) => {
               item()
             })
           })
-          this.load = true
+          this.loadRemote = true
         }
       }
     },
     clear(key) {
-      clearStore(key)
+      clearStore(`${PREFIX}:${key}`)
     }
   }
 
-  return ( config, callback ) => (new battery()).init({
+  return ( config, callback ) => (new Battery()).init({
     config,
     callback
   })
 
-})()
+})(window, document)

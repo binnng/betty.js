@@ -1,6 +1,6 @@
-"use strict";
+var Battery = (function (window, document, undefined) {
 
-var Battery = (function () {
+  var PREFIX = "BTRY";
 
   var Store = (function () {
     var name = "__s";
@@ -25,7 +25,9 @@ var Battery = (function () {
     }
   })();
 
-  var clearStore = function clearStore(prefix) {
+  function noop() {}
+
+  function clearStore(prefix) {
     if (!Store.virtual) {
       for (var key in Store) {
         if (0 === key.indexOf(prefix)) {
@@ -33,25 +35,22 @@ var Battery = (function () {
         }
       }
     }
-  };
-
-  function noop() {}
+  }
 
   function loadScript(src, cb) {
-    var doc = document;
-    var tag = 'script';
+    var tag = "script";
     var firstScript;
     var el;
-    cb = cb || function () {};
-    el = doc.createElement(tag);
-    firstScript = doc.getElementsByTagName(tag)[0];
+    cb = cb || noop;
+    el = document.createElement(tag);
+    firstScript = document.getElementsByTagName(tag)[0];
     el.async = 1;
     el.src = src;
     el.onload = function () {
       cb();
     };
     el.onerror = function () {
-      cb(new Error('failed to load: ' + src));
+      cb(new Error("failed to load: " + src));
     };
     firstScript.parentNode.insertBefore(el, firstScript);
   }
@@ -62,14 +61,14 @@ var Battery = (function () {
     callback && setTimeout(callback, 0);
   }
 
-  function battery() {
-    this.noCache = this.load = false;
+  function Battery() {
+    this.noCache = this.loadRemote = false;
     this.uri = this.key = "";
     this.callbacks = [];
   }
 
-  battery.prototype = {
-    constructor: battery,
+  Battery.prototype = {
+    constructor: Battery,
     init: function init(_ref) {
       var config = _ref.config;
       var callback = _ref.callback;
@@ -81,22 +80,23 @@ var Battery = (function () {
       this.key = key;
       noCache !== undefined && (this.noCache = noCache);
 
-      var storeKey = key + ":" + uri;
+      var storeKey = PREFIX + ":" + key + ":" + uri;
       var storeCode = Store.getItem(storeKey);
 
       this.storeKey = storeKey;
       noCache || (this.code = storeCode);
 
-      if (callback) {
-        this.callbacks.push(callback);
-      }
-
-      // 如果没有存储脚本，清除之前版本的key
       if (!storeCode) {
+        // 如果没有存储脚本，清除之前版本的key
         // 清理操作不阻塞主脚本
         setTimeout(function () {
           clearStore(key);
         }, 0);
+
+        // 如果传递了回调函数，存放到`callbacks`中
+        if (callback) {
+          this.callbacks.push(callback);
+        }
       } else {
         callback && this.apply(callback);
       }
@@ -117,31 +117,31 @@ var Battery = (function () {
       var uri = this.uri;
       var noCache = this.noCache;
       var callbacks = this.callbacks;
-      var load = this.load;
+      var loadRemote = this.loadRemote;
 
       if (code && !noCache) {
         execCode(code, callback);
       } else {
         callbacks.push(callback);
-        if (!load) {
+        if (!loadRemote) {
           loadScript(uri, function () {
-            callbacks.forEach(function (item) {
+            callbacks.forEach(function (item, key) {
               item();
             });
           });
-          this.load = true;
+          this.loadRemote = true;
         }
       }
     },
     clear: function clear(key) {
-      clearStore(key);
+      clearStore(PREFIX + ":" + key);
     }
   };
 
   return function (config, callback) {
-    return new battery().init({
+    return new Battery().init({
       config: config,
       callback: callback
     });
   };
-})();
+})(window, document);
