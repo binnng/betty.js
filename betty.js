@@ -27,6 +27,10 @@ var Betty = ((window, document, undefined) => {
 
   function noop() {}
 
+  function throwError(msg) {
+    throw new Error(msg)
+  }
+
   function clearStore(prefix) {
     if (!Store.virtual) {
       for (let key in Store) {
@@ -47,7 +51,7 @@ var Betty = ((window, document, undefined) => {
     el.async = 1
     el.src = src
     el.onload = () => { cb() }
-    el.onerror = () => { cb(new Error(`failed to load: ${src}`)) }
+    el.onerror = () => { cb(throwError(`failed to load: ${src}`)) }
     firstScript.parentNode.insertBefore(el, firstScript)
   }
 
@@ -61,7 +65,7 @@ var Betty = ((window, document, undefined) => {
       target.status >= 400 ? error(target) : success(target.response)
     })
     function error() {
-      return new Error(`failed to load: ${src}`)
+      return throwError(`failed to load: ${src}`)
     }
   }
 
@@ -72,7 +76,7 @@ var Betty = ((window, document, undefined) => {
   }
 
   function Betty() {
-    this.noCache = this.loadRemote = this.xDomain = false
+    this.noCache = this.loadRemote = this.stored = this.xDomain = false
     this.uri = this.key = ""
     this.callbacks = []
   }
@@ -97,12 +101,12 @@ var Betty = ((window, document, undefined) => {
       xDomain !== undefined && ( this.xDomain = xDomain )
 
       let storeKey = `${PREFIX}:${key}:${uri}`
-      let storeCode = Store.getItem(storeKey)
+      let storedCode = Store.getItem(storeKey)
 
       this.storeKey = storeKey
-      noCache || ( this.code = storeCode )
+      noCache || ( this.code = storedCode )
 
-      if (!storeCode) {
+      if (!storedCode) {
         // 如果没有存储脚本，清除之前版本的key
         // 清理操作不阻塞主脚本
         setTimeout(function() {
@@ -114,18 +118,20 @@ var Betty = ((window, document, undefined) => {
           this.callbacks.push(callback)
         }
       } else {
+        this.stored = true
         callback && this.apply(callback)
       }
 
       return this
     },
-    add(func) {
+    store(func) {
       let {
         storeKey
       } = this
       let funcString = func.toString()
 
       this.code = funcString
+      this.stored = true
       this.noCache || Store.setItem(storeKey, funcString)
       execCode(funcString)
       return this
@@ -140,10 +146,15 @@ var Betty = ((window, document, undefined) => {
         xDomain
       } = this
 
+      let _this = this
+
       function cb() {
         callbacks.forEach((item, key) => {
           item()
         })
+        if (!_this.stored) {
+          throwError(`check the padding of ${uri}`)
+        }
       }
 
       if (code && !noCache) {
@@ -152,7 +163,7 @@ var Betty = ((window, document, undefined) => {
         callbacks.push(callback)
         if (!loadRemote) {
           xDomain ? loadScript(uri, cb) : loadScriptWithAjax(uri, (res) => {
-            this.add(`function(){${res}}`)
+            this.store(`function(){${res}}`)
             cb()
           })
           this.loadRemote = true

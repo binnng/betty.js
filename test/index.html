@@ -10,7 +10,9 @@
 <script type="text/javascript">
 	var MBK = Betty({
 		uri: "/test/mobike_with_padding.js",
-		key: "mobike"
+		key: "mobike",
+		xDomain: true,
+		noCache: false
 	}, function() {
 		console.log(Mobike.site)
 	})

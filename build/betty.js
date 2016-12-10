@@ -27,6 +27,10 @@ var Betty = (function (window, document, undefined) {
 
   function noop() {}
 
+  function throwError(msg) {
+    throw new Error(msg);
+  }
+
   function clearStore(prefix) {
     if (!Store.virtual) {
       for (var key in Store) {
@@ -50,7 +54,7 @@ var Betty = (function (window, document, undefined) {
       cb();
     };
     el.onerror = function () {
-      cb(new Error("failed to load: " + src));
+      cb(throwError("failed to load: " + src));
     };
     firstScript.parentNode.insertBefore(el, firstScript);
   }
@@ -65,7 +69,7 @@ var Betty = (function (window, document, undefined) {
       target.status >= 400 ? error(target) : success(target.response);
     });
     function error() {
-      return new Error("failed to load: " + src);
+      return throwError("failed to load: " + src);
     }
   }
 
@@ -76,7 +80,7 @@ var Betty = (function (window, document, undefined) {
   }
 
   function Betty() {
-    this.noCache = this.loadRemote = this.xDomain = false;
+    this.noCache = this.loadRemote = this.stored = this.xDomain = false;
     this.uri = this.key = "";
     this.callbacks = [];
   }
@@ -97,12 +101,12 @@ var Betty = (function (window, document, undefined) {
       xDomain !== undefined && (this.xDomain = xDomain);
 
       var storeKey = PREFIX + ":" + key + ":" + uri;
-      var storeCode = Store.getItem(storeKey);
+      var storedCode = Store.getItem(storeKey);
 
       this.storeKey = storeKey;
-      noCache || (this.code = storeCode);
+      noCache || (this.code = storedCode);
 
-      if (!storeCode) {
+      if (!storedCode) {
         // 如果没有存储脚本，清除之前版本的key
         // 清理操作不阻塞主脚本
         setTimeout(function () {
@@ -114,23 +118,25 @@ var Betty = (function (window, document, undefined) {
           this.callbacks.push(callback);
         }
       } else {
+        this.stored = true;
         callback && this.apply(callback);
       }
 
       return this;
     },
-    add: function add(func) {
+    store: function store(func) {
       var storeKey = this.storeKey;
 
       var funcString = func.toString();
 
       this.code = funcString;
+      this.stored = true;
       this.noCache || Store.setItem(storeKey, funcString);
       execCode(funcString);
       return this;
     },
     apply: function apply(callback) {
-      var _this = this;
+      var _this2 = this;
 
       var code = this.code;
       var uri = this.uri;
@@ -139,10 +145,15 @@ var Betty = (function (window, document, undefined) {
       var loadRemote = this.loadRemote;
       var xDomain = this.xDomain;
 
+      var _this = this;
+
       function cb() {
         callbacks.forEach(function (item, key) {
           item();
         });
+        if (!_this.stored) {
+          throwError("check the padding of " + uri);
+        }
       }
 
       if (code && !noCache) {
@@ -151,7 +162,7 @@ var Betty = (function (window, document, undefined) {
         callbacks.push(callback);
         if (!loadRemote) {
           xDomain ? loadScript(uri, cb) : loadScriptWithAjax(uri, function (res) {
-            _this.add("function(){" + res + "}");
+            _this2.store("function(){" + res + "}");
             cb();
           });
           this.loadRemote = true;
