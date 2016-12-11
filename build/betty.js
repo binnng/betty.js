@@ -88,6 +88,8 @@ var Betty = (function (window, document, undefined) {
   Betty.prototype = {
     constructor: Betty,
     init: function init(_ref) {
+      var _this2 = this;
+
       var config = _ref.config;
       var callback = _ref.callback;
       var uri = config.uri;
@@ -110,7 +112,7 @@ var Betty = (function (window, document, undefined) {
         // 如果没有存储脚本，清除之前版本的key
         // 清理操作不阻塞主脚本
         setTimeout(function () {
-          clearStore(key);
+          _this2.remove(key);
         }, 0);
 
         // 如果传递了回调函数，存放到`callbacks`中
@@ -136,7 +138,7 @@ var Betty = (function (window, document, undefined) {
       return this;
     },
     apply: function apply(callback) {
-      var _this2 = this;
+      var _this3 = this;
 
       var code = this.code;
       var uri = this.uri;
@@ -162,7 +164,7 @@ var Betty = (function (window, document, undefined) {
         callbacks.push(callback);
         if (!loadRemote) {
           xDomain ? loadScript(uri, cb) : loadScriptWithAjax(uri, function (res) {
-            _this2.store("function(){" + res + "}");
+            _this3.store("function(){" + res + "}");
             cb();
           });
           this.loadRemote = true;
@@ -170,7 +172,7 @@ var Betty = (function (window, document, undefined) {
       }
       return this;
     },
-    clear: function clear(key) {
+    remove: function remove(key) {
       clearStore(PREFIX + ":" + key);
       return this;
     }

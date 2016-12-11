@@ -1,6 +1,6 @@
 {
   "name": "betty.js",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Cache javascript content to localStorage",
   "main": "betty.js",
   "scripts": {

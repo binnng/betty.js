@@ -109,8 +109,8 @@ var Betty = ((window, document, undefined) => {
       if (!storedCode) {
         // 如果没有存储脚本，清除之前版本的key
         // 清理操作不阻塞主脚本
-        setTimeout(function() {
-          clearStore(key)
+        setTimeout(() => {
+          this.remove(key)
         }, 0)
 
         // 如果传递了回调函数，存放到`callbacks`中
@@ -171,7 +171,7 @@ var Betty = ((window, document, undefined) => {
       }
       return this
     },
-    clear(key) {
+    remove(key) {
       clearStore(`${PREFIX}:${key}`)
       return this
     }

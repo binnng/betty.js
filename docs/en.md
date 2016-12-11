@@ -8,29 +8,13 @@
 
 **betty.js**是一款极轻量的、使用`localStorage`存储Javascript代码的工具。她足够轻量，足够简洁易用，足够具有扩展性，压缩后的`min.betty.js`只有1KB！使得你可以直接以`inline`引入的方式将betty用到你的项目里。
 
-## 安装
+## Installation
 
 ``` shell
 npm install betty.js
 ```
 
-拷贝`min.betty.js`的代码，使用`inline`的方式引入项目里：
-
-``` html
-<script type="text/javascript">
-	var Betty=function....
-</script>
-```
-
-如果你的项目基于[FIS](http://fis.baidu.com)，可以这么引入：
-
-``` html
-<script type="text/javascript" src="/path/min.betty.js?__inline"></script>
-```
-
-## 示例
-
-### 方式一：
+## Demo
 
 ``` javascript
 var betty = Betty({
@@ -42,7 +26,6 @@ var betty = Betty({
 	// your code...
 })
 ```
-### 方式二：
 
 ``` javascript
 var betty = Betty({
@@ -61,15 +44,9 @@ betty.apply(function() {
 })
 ```
 
-以上两种方式的代码执行一遍之后，`min.allLib.js`的内容就会被betty存储到localStorage里，第二次执行时就不会从网络请求`min.allLib.js`，直接从缓存中读取并执行。
+## Cross domain
 
-至于为何除了第一种写法，还支持了第二种写法？是因为在前端工程里，可以考虑把定义`betty`的操作放到通用的layout里，把`betty.apply`写进每个页面对应的js文件里。
-
-当然，你可以自由选择自己的喜好。
-
-## 跨域缓存
-
-`betty.js`会默认使用`Ajax`请求待缓存的JS资源，如果跨域则会请求出错。这时候你需要设置`betty padding`和`xDomain`来让跨域请求JS资源被支持：
+You need set `betty padding` and `xDomain`:
 
 index.html
 
@@ -93,16 +70,16 @@ betty.store(function() {
 })
 ```
 
-注意：
-* 请设置`xDomain`为`true`
-* 请在待缓存的JS文件中设置`betty padding`，如以上的`betty.store(....)`
-* 请设置`betty`为全局变量
+Notice:
+* Please set `xDomain` equal `true`
+* Please set `betty padding`, just like `betty.store(....)`
+* Please set `betty` as global
 
-## 版本管理
+## Version Control
 
-`betty.js`绝对依赖`uri`和`key`来管理JS版本。如果你的代码需要更新，请更换`uri`的值，新的JS就会被请求，然后代码内容会被重新存储到LocalStorage里，并且会**删掉旧版本的代码**。
+`betty.js`use `uri`and`key`to control version. You should to change `uri` if you need to update stored code.
 
-`betty.js`会以**BETTY:{key}:{uri}**格式存储JS代码，例如：
+`betty.js`store code like **BETTY:{key}:{uri}**
 
 ```
 BETTY:allLib:/path/min.allLib.version.js
@@ -166,3 +143,7 @@ addcss("a{color: red,font-size: 12px}")
 ``` javascript
 addcss(__inline("style.css"))
 ```
+
+
+
+

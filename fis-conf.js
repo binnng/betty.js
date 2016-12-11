@@ -39,5 +39,5 @@ fis.media("min")
         conditionals: true
       }
     }),
-    release: "betty.min.js"
+    release: "min.betty.js"
   })
